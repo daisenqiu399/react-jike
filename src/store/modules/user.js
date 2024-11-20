@@ -2,6 +2,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 // import { userStore } from "react-redux";
 import { request,setToken as _settoken,getToken } from "@/utils";
+import { removeToken } from "@/utils";
 
 const userStore=createSlice({
     name:"user",
@@ -20,12 +21,19 @@ const userStore=createSlice({
         },
         setUserInfo(state,action){
          state.userInfo=action.payload
+        },
+
+        clearUserInfo(state){
+            state.token=''
+            state.userInfo={}
+            removeToken()
         }
+
     }
 })
 
 //解构出actionCreate
-const {setToken,setUserInfo}=userStore.actions
+const {setToken,setUserInfo,clearUserInfo}=userStore.actions
 //获取reducer函数
 const userReducer=userStore.reducer
 
@@ -49,5 +57,5 @@ const fetchUserInfo=(loginForm)=>{
     }
 }
 
-export {fetchLogin,setToken,fetchUserInfo}
+export {fetchLogin,setToken,fetchUserInfo,clearUserInfo}
 export default userReducer
