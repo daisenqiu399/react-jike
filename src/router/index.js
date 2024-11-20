@@ -14,7 +14,7 @@ const router = createBrowserRouter([
         element: <AuthRoute><Layout /></AuthRoute>,
         children: [
             {
-                //    path:'home',
+                   path:'home',
                 // 默认二级路由首页
                 index: true,
                 element: <Home />
