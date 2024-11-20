@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
 
 //把可变的部分抽象成prop参数
 
-const BarChart=({title})=>{
+const BarChart=({title,data})=>{
 const charRef=useRef(null)
  useEffect(()=>{
         //获取渲染图标的dom节点
@@ -26,7 +26,7 @@ const option = {
   },
   series: [
     {
-      data: [120, 200,150],
+      data: data,
       type: 'bar'
     }
   ]
