@@ -16,7 +16,7 @@ const router = createBrowserRouter([
             {
                    path:'home',
                 // 默认二级路由首页
-                index: true,
+                // index: true,
                 element: <Home />
             },
 
@@ -30,8 +30,6 @@ const router = createBrowserRouter([
                 element: <Publish />
             }
         ]
-
-
     },
     {
         path: '/login',

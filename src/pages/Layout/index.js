@@ -1,5 +1,5 @@
 import { Layout, Menu, Popconfirm } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   HomeOutlined,
   DiffOutlined,
@@ -10,15 +10,33 @@ import './index.scss'
 import { Outlet } from 'react-router-dom'
 
 const {Header,Sider}=Layout
+function getItem(label,key,icon){
+    return {
+        key,
+        icon,
+        label,
+    }
+}
+const items=[
+    
+  getItem('数据概览', '/home', <HomeOutlined />),
+  getItem('内容管理', 'article', <DiffOutlined />),
+  getItem('发布文章', 'publish', <EditOutlined />),
+]
 const GeekLayout=()=>{
-    const navigate=useNavigate()
+const navigate=useNavigate()
 const onMenuClick=(route)=>{
-  
-    console.log(route)
+    // console.log(route)
     const path=route.key
     navigate(path)
-
 }
+
+
+
+//反向高亮 ：根据路由选择对应侧边栏高亮
+const location=useLocation()
+// console.log(location.pathname)
+const selectedKey=location.pathname
     return (
         <Layout>
             <Header className="header">
@@ -37,19 +55,12 @@ const onMenuClick=(route)=>{
                 <Menu
                 mode="inline"
                 theme="dark"
-                defaultSelectedKeys={['1']}
+                defaultSelectedKeys={selectedKey}
                 style={{height:'100%',borderRight:0}}
                 onClick={onMenuClick}
+                items={items}
                 >
-                    <Menu.Item icon={<HomeOutlined/>} key="/home">
-                    数据概览
-                    </Menu.Item>
-                    <Menu.Item icon={<DiffOutlined/>} key="/article">
-                   内容管理
-                    </Menu.Item>
-                    <Menu.Item icon={<EditOutlined/>} key="/publish">
-                    发布文章
-                    </Menu.Item>
+                    
                 </Menu>
             </Sider>
            <Layout className="layout-content" style={{padding:20}}>
