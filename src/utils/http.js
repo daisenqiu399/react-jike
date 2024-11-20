@@ -1,6 +1,7 @@
 //axios封装
 import axios from 'axios'
-import { getToken } from './token'
+import { getToken, removeToken } from './token'
+import router from '@/router'
 
 const request = axios.create({
   baseURL: 'http://geek.itheima.net/v1_0',
@@ -27,6 +28,15 @@ request.interceptors.response.use((response)=> {
     return response.data
   }, (error)=> {
     // 超出 2xx 范围的状态码都会触发该函数。
+
+   //监控401 token失效
+  //  console.log(error)
+   if(error.response.status===401){
+    removeToken()
+    router.navigate('/login')
+    //刷新一下，跳到登录页
+    window.location.reload()
+   }
     return Promise.reject(error)
 })
 
