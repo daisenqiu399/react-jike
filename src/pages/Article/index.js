@@ -7,11 +7,15 @@ import { Table, Tag, Space } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
 import img404 from 'src/assets/error.png'
+import { useChannel } from '@/hooks/useChannel'
+import { getArticleListAPI } from '@/apis/article'
+import { useEffect, useState } from 'react'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
 
 const Article = () => {
+    const {channelList}=useChannel()
     const columns = [
         {
           title: '封面',
@@ -78,6 +82,19 @@ const Article = () => {
               title: 'wkwebview离线化加载h5资源解决方案' 
           }
       ]
+
+   //获取文章列表
+
+const [list,setList]=useState([])
+const [count,setCount]=useState()
+useEffect(()=>{
+ async function getList(){
+   const res=await getArticleListAPI()
+   setList(res.data.results)
+   setCount(res.data.total_count)
+  }
+  getList()
+},[])
   return (
     <div>
       <Card
@@ -108,8 +125,9 @@ const Article = () => {
               defaultValue="lucy"
               style={{ width: 120 }}
             >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
+              {/* <Option value="jack">Jack</Option>
+              <Option value="lucy">Lucy</Option> */}
+            {channelList.map(item=><Option key={item.id} value={item.id}>{item.name}</Option>)}
             </Select>
           </Form.Item>
 
@@ -126,8 +144,8 @@ const Article = () => {
         </Form>
       </Card>
       {/* 表格区域 */}
-      <Card title={`根据筛选条件共查询到 count 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={data} />
+      <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
+        <Table rowKey="id" columns={columns} dataSource={list} />
       </Card>
     </div>
   )
