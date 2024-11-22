@@ -11,11 +11,11 @@ import {
    message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { getChannelAPI,createArticleAPI } from '@/apis/article'
+import { getChannelAPI,createArticleAPI,getArticleById } from '@/apis/article'
 import { useEffect, useState } from 'react'
 import { useChannel } from '@/hooks/useChannel'
 
@@ -59,16 +59,47 @@ const {channelList}=useChannel()
    setImageType(e.target.value)
    }
   
-  
+  //回调数据
+  //获取id
+  const [searchParams]=useSearchParams()
+ const articleID=searchParams.get('id')
+
+ //获取实例
+ const [form]=Form.useForm()
+  console.log(articleID)
+useEffect(()=>{
+async function getArticleDetail(){
+    const res=  await getArticleById(articleID)
+    console.log('喜喜',res.data)
+    form.setFieldValue({
+      ...res.data,
+      type:res.data.cover.type
+    })
+    //回填图片
+    setImageType(res.data.cover.type)
+    //显示图片
+    setImageList(res.data.cover.images.map(url=>{
+      return {url}
+    }))
+   }
+   //调用实例，完成回填数据，只有id的时候才调用
+if(articleID){
+   getArticleDetail()
+}
+   
+
+},[articleID,form]) 
    return (
       <div className="publish">
          <Card
             title={
-               <Breadcrumb separator=">">
+               <Breadcrumb items={{
+                  
+               }}>
                   <Breadcrumb.Item>
                      <Link to="/home">首页</Link>
                   </Breadcrumb.Item>
-                  <Breadcrumb.Item>发布文章</Breadcrumb.Item>
+                  {articleID?<Breadcrumb.Item>编辑文章</Breadcrumb.Item>:<Breadcrumb.Item>发布文章</Breadcrumb.Item>}
                </Breadcrumb>
             }
          >
@@ -77,6 +108,7 @@ const {channelList}=useChannel()
                wrapperCol={{ span: 16 }}
                initialValues={{ type: 0 }}
                onFinish={onFinish}
+               form={form}
             >
                <Form.Item
                   label="标题"
@@ -112,6 +144,7 @@ const {channelList}=useChannel()
                      action={'http://geek.itheima.net/v1_0/upload'}
                      onChange={onChange}
                      maxCount={imageType}
+                     fileList={imageList}
                   >
                      <div style={{ marginTop: 8 }}>
                         <PlusOutlined />
