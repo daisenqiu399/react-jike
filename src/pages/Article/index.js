@@ -97,16 +97,56 @@ const Article = () => {
 
    //获取文章列表
 
+
+    //筛选功能
+  //准备参数
+  const [reqData,setDate]=useState({
+    status:'',
+    channel_id:'',
+    begin_oubdate:'',
+    end_pubdate:'',
+    page:1,
+    per_page:4
+  })
+
 const [list,setList]=useState([])
 const [count,setCount]=useState()
 useEffect(()=>{
  async function getList(){
-   const res=await getArticleListAPI()
+   const res=await getArticleListAPI(reqData)
    setList(res.data.results)
    setCount(res.data.total_count)
   }
   getList()
-},[])
+},[reqData])
+
+
+
+  //获取当前的筛选数据
+  const onFinish=(formValue)=>{
+   console.log(formValue)
+   setDate({
+    ...reqData,
+    channel_id:formValue.channel_id,
+    status:formValue.status,
+    begin_oubdate:formValue.date[0].format('YYYY-MM-DD'),
+    end_pubdate:formValue.date[1].format('YYYY-MM-DD')
+   })
+
+   //重新拉取文章列表
+   //reqData依赖项发生变化，就重复执行副作用函数getArticleListAPI
+  }
+
+  //分页
+  const onPageChange=(page)=>{
+    console.log(page)
+    setDate({
+      //修改参数依赖项，引发数据的重新渲染
+      ...reqData,
+      page
+
+    })
+  }
   return (
     <div>
       <Card
@@ -120,7 +160,7 @@ useEffect(()=>{
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialValues={{ status: null }}>
+        <Form initialValues={{ status: null }} onFinish={onFinish}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
               <Radio value={null}>全部</Radio>
@@ -157,7 +197,11 @@ useEffect(()=>{
       </Card>
       {/* 表格区域 */}
       <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={list} />
+        <Table rowKey="id" columns={columns} dataSource={list} pagination={{
+          total:count,
+          pageSize:reqData.per_page,
+          onChange:onPageChange
+        }}/>
       </Card>
     </div>
   )
