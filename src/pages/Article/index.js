@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select } from 'antd'
+import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select,Popconfirm } from 'antd'
 //时间选择器 汉化包
 import locale from 'antd/es/date-picker/locale/zh_CN'
 import './index.scss'
@@ -8,7 +8,7 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
 import img404 from 'src/assets/error.png'
 import { useChannel } from '@/hooks/useChannel'
-import { getArticleListAPI } from '@/apis/article'
+import { getArticleListAPI,delArticleAPI } from '@/apis/article'
 import { useEffect, useState } from 'react'
 
 const { Option } = Select
@@ -69,12 +69,23 @@ const Article = () => {
             return (
               <Space size="middle">
                 <Button type="primary" shape="circle" icon={<EditOutlined />} />
+                <Popconfirm
+                title="删除文章"
+                description='确认要删除当前文章吗'
+                onConfirm={()=>onConfirm(data)}
+                onText='Tes'
+                cancelText='No'
+                >
                 <Button
                   type="primary"
                   danger
                   shape="circle"
                   icon={<DeleteOutlined />}
+                  
+                  
                 />
+                </Popconfirm>
+              
               </Space>
             )
           }
@@ -146,6 +157,16 @@ useEffect(()=>{
       page
 
     })
+  }
+
+  //删除文章
+  const onConfirm=async (value)=>{
+    // console.log('点击删除了',value)
+   await delArticleAPI(value.id)
+    setDate({
+      ...reqData
+    })
+
   }
   return (
     <div>
