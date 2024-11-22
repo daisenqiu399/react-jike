@@ -15,7 +15,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { getChannelAPI,createArticleAPI,getArticleById } from '@/apis/article'
+import { getChannelAPI,createArticleAPI,getArticleById,updateArticleAPI } from '@/apis/article'
 import { useEffect, useState } from 'react'
 import { useChannel } from '@/hooks/useChannel'
 
@@ -37,13 +37,23 @@ const {channelList}=useChannel()
          content,
          cover:{
             type:imageType,
-            images:imageList.map(item=>item.response.data.url) //图片列表
+            images:imageList.map(item=>{
+               if(item.response){
+                  return item.response.data.url
+               }else{
+                  return item.url
+               }
+            }) //图片列表
          },
          channel_id
       }
-      createArticleAPI(reqData)
+      //调用不同的接口，新增调新增，更新调新增
+      if(articleID){
+         updateArticleAPI({...reqData,id:articleID})
+      }else{
+         createArticleAPI(reqData)
+      }
    }
-
    //上传回调
    const [imageList,setImageList]=useState([])
    const onChange=(value)=>{
